@@ -21,9 +21,10 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  // 使用sessionStorage而不是localStorage，这样在会话结束时(关闭页面)数据会自动清除
+  // 但在刷新页面时会保持状态
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    // 检查本地存储中是否有认证标记
-    return localStorage.getItem('auth_token') === 'authenticated';
+    return sessionStorage.getItem('auth_token') === 'authenticated';
   });
   const [isLoading, setIsLoading] = useState(false);
   
@@ -58,7 +59,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       if (password === correctPassword) {
         setIsAuthenticated(true);
-        localStorage.setItem('auth_token', 'authenticated');
+        // 使用sessionStorage而不是localStorage，这样在会话结束时数据会自动清除
+        sessionStorage.setItem('auth_token', 'authenticated');
         return true;
       }
       return false;
@@ -73,7 +75,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // 登出函数
   const logout = () => {
     setIsAuthenticated(false);
-    localStorage.removeItem('auth_token');
+    sessionStorage.removeItem('auth_token');
   };
 
   // 提供上下文值

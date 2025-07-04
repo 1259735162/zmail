@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import Container from '../components/Container';
@@ -9,15 +9,20 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [localLoading, setLocalLoading] = useState(false);
-  const { authenticate, isLoading: authLoading } = useAuth();
+  const { authenticate, isLoading: authLoading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   
   // 合并本地和认证上下文的加载状态
   const isLoading = localLoading || authLoading;
   
-  // 获取用户想要访问的原始路径，如果没有则默认为首页
-  const from = location.state?.from?.pathname || '/';
+  // 获取用户想要访问的原始路径，如果没有则默认为/home
+  const from = location.state?.from?.pathname || '/home';
+  
+  // 如果用户已登录，直接重定向到主页
+  if (isAuthenticated) {
+    return <Navigate to="/home" replace />;
+  }
   
   // 添加键盘事件监听
   useEffect(() => {
